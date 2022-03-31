@@ -1,0 +1,17 @@
+[
+	{
+	"_id": 0,
+	"name": "John",
+	"GPA" : 3.3
+	},
+	{
+		"_id": 1,
+		"name": "James",
+		"GPA" : 2.5
+	},
+	{
+		"_id": 2,
+		"name": "jasmin",
+		"GPA" : 3.8
+	}
+]
