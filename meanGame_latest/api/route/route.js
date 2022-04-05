@@ -9,7 +9,8 @@ router.route("/games")
 router.route("/games/:gameID")
     .get(gameController.getOne)
     .put(gameController.fullUpdateOne)
-    .patch(gameController.partialUpdateOne);
+    .patch(gameController.partialUpdateOne)
+    .delete(gameController.deleteOne);
 
 router.route("/games/:gameID/publisher")
     .get(publisherController.getOne)

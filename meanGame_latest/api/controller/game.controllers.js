@@ -123,3 +123,12 @@ module.exports.partialUpdateOne = function(req, res) {
         })
     }
 }
+
+module.exports.deleteOne = function (req, res){
+    const expectedStatus = 204; 
+    const response = { status: 200, message : {} };
+    const gameID = req.params.gameID;
+
+    if (helpers.checkID(gameID, response)) 
+        Game.findByIdAndDelete(gameID).exec((err, games) =>  helpers.getCallback(err, games, res, response, "Game deleted Successfully : ", expectedStatus));
+}
