@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const helpers = require("./callbacksAndValidations");
 require("dotenv").config();
 const Game = mongoose.model(process.env.GAME_MODEL);
 
@@ -17,30 +18,26 @@ module.exports.getAll = function (req, res)
         response['message'] = {message : "count out of range, should be less than 10 and more than 0"};
     } 
     else 
-        Game.find().skip(offset).limit(count).exec((err, games) => getCallback(err, games, res, response, "Games found :", 200));
+        Game.find().skip(offset).limit(count).exec((err, games) => helpers.getCallback(err, games, res, response, "Games found :", 200));
 }
-
 
 module.exports.getOne = function (req, res){
     const expectedStatus = 200; 
     const response = { status: 200, message : {} };
     const gameID = req.params.gameID;
 
-    if (checkID(gameID, response)) 
-        Game.findById(gameID).exec((err, games) => getCallback(err, games, res, response, "Game founded : ", expectedStatus));
+    if (helpers.checkID(gameID, response)) 
+        Game.findById(gameID).exec((err, games) =>  helpers.getCallback(err, games, res, response, "Game founded : ", expectedStatus));
     
 }
 
 module.exports.insertOne = function(req, res) {
-    const response = 
-    {
-        status: 201, 
-        message : {}
-    }
+    const response = { status: 201,  message : {} }
     if (!req.body || !req.body.titile) {
         response["status"] = 404;
         response["message"] = {message : "Not all required fields provieded."}
-    } else if (req.body && req.body.title) {
+    } 
+    if (req.body && req.body.title) {
         let newGame = {
             title : req.body.title
         }
@@ -62,7 +59,9 @@ module.exports.insertOne = function(req, res) {
             }
             newGame["publisher"] = newPublisher;
         }
-        Game.create(newGame, (err, game) => getCallback(err, game, res, response, "Game added : ", 201));
+        Game.create(newGame, (err, game) =>  helpers.getCallback(err, game, res, response, "Game added : ", 201));
+    } else {
+        res.status(response["status"]).json(response["message"]);
     }
 }
 
@@ -74,7 +73,7 @@ module.exports.fullUpdateOne = function(req, res) {
     }
     const gameID = req.params.gameID;
 
-    if (checkID(gameID, response)) {
+    if (helpers.checkID(gameID, response)) {
         Game.findById(gameID).exec(function(err, game){
             if (err) {
                 response["status"] = 404;
@@ -90,7 +89,7 @@ module.exports.fullUpdateOne = function(req, res) {
                 if (req.body.minAge) game.minAge = req.body.minAge;
                 if (req.body.publisher) game.publisher = req.body.publisher; 
                 if (req.body.designers) game.designers = req.body.designers; 
-                game.save((err, updatedGame) => getCallback(err, updatedGame, res, response, "Game Updated", 204));
+                game.save((err, updatedGame) => helpers.getCallback(err, updatedGame, res, response, "Game Updated", 204));
             }
         })
     }
@@ -103,7 +102,7 @@ module.exports.partialUpdateOne = function(req, res) {
     }
     const gameID = req.params.gameID;
 
-    if (checkID(gameID, response)) {
+    if (helpers.checkID(gameID, response)) {
         Game.findById(gameID).exec(function(err, game){
             if (err) {
                 response["status"] = 404;
@@ -119,35 +118,8 @@ module.exports.partialUpdateOne = function(req, res) {
                 game.minAge = req.body.minAge || game.minAge;
                 game.publisher = req.body.publisher || game.publisher;
                 game.designers = req.body.designers || game.designers;
-                game.save((err, updatedGame) => getCallback(err, updatedGame, res, response, "Game Updated", 204));
+                game.save((err, updatedGame) => helpers.getCallback(err, updatedGame, res, response, "Game Updated", 204));
             }
         })
     }
-}
-
-const getCallback = function (err, games, res, response, logString, statusCode) {
-    if (err) 
-    {
-        response["status"] = 500
-        response['message'] = {message : "Couldn't read data from db : " + err};
-    } 
-    else 
-    {
-        console.log( logString , (games.length || games));
-        response.status = statusCode;
-        response.message = games;
-        res.status(response.status).json(response.message);
-    }
-    if (response["status"] != statusCode) {
-        res.status(response.status).json(response.message);
-    }
-}
-
-const checkID = function (inputID, response) {
-    if (! mongoose.isValidObjectId(inputID)) {
-        response["status"] = 404;
-        response["message"] = {message : "Incorrect data format provided"};
-        return false; 
-    }
-    return true;
 }
