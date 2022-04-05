@@ -3,7 +3,8 @@ const controller = require("../controller/game.controllers");
 const publisherController = require("../controller/publisher.controller");
 const reviewController = require("../controller/reviewsController");
 router.route("/games")
-    .get(controller.getAll);
+    .get(controller.getAll)
+    .post(controller.insertOne);
 
 router.route("/games/:gameID")
     .get(controller.getOne)

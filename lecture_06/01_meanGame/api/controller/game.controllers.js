@@ -2,29 +2,108 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const Game = mongoose.model(process.env.GAME_MODEL);
 
-module.exports.getAll = function (req, res){
-    let offset = 0; 
-    let count = 5; 
-    if (req.query && req.query.offset) {
-        offset = parseInt(req.query.offset, 10);
+module.exports.getAll = function (req, res)
+{
+    const response = 
+    {
+        status: 200, 
+        message : {}
     }
-    if (req.query && req.query.count) {
-        count = parseInt(req.query.count);
-    }
-    Game.find().skip(offset).limit(count).exec(function(err, games) {
-        console.log("Found games", games.length);
-        res.json(games);
-    })
+    let offset =  req.query.offset || 0; 
+    let count = req.query.count || 5; 
+    if (count > 10) 
+    {
+        response["status"] = 400
+        response['message'] = {message : "count out of range, should be less than 10 and more than 0"};
+    } 
+    else 
+        Game.find().skip(offset).limit(count).exec((err, games) => getCallback(err, games, res, response, "Games found :", 200));
+    if (response["status"] != 200)
+        res.status(response["status"]).json(response["message"]);
 }
 
 
 module.exports.getOne = function (req, res){
+    const response = 
+    {
+        status: 200, 
+        message : {}
+    }
     const gameID = req.params.gameID;
-    Game.findById(gameID).exec(function(err, game) {
-        console.log("Found game", game);
-        res.json(game);
-    })
+    if (!mongoose.isValidObjectId(gameID)) 
+    {
+        response["status"] = 404; 
+        response["message"] = {message : "Inalid gameID format"};
+    } else {
+        Game.findById(gameID).exec((err, games) => getCallback(err, games, res, response, "Game founded : ", 200));
+    }
+    if (response["status"] != 200) {
+        res.status(response.status).json(response.message);
+    }
 }
+
+module.exports.insertOne = function(req, res) {
+    const response = 
+    {
+        status: 201, 
+        message : {}
+    }
+    if (req.body && req.body.title) {
+        let newGame = {
+            title : req.body.title
+        }
+        if (req.body.year) {
+            newGame["year"] = req.body.year;
+        }
+        if (req.body.rate) {
+            newGame["rate"] = req.body.rate;
+        }
+        if (req.body.price) {
+            newGame["price"] = req.body.price; 
+        }
+        if (req.body.minPlayers) {
+            newGame["minPlayers"] = req.body.minPlayers; 
+        }
+        if (req.body.maxPlayers) {
+            newGame["maxPlayers"] = req.body.maxPlayers; 
+        }
+        if (req.body.minAge) {
+            newGame["minAge"] = req.body.minAge; 
+        }
+        if (req.body.designers) {
+            newGame["designers"] = req.body.designers; 
+        }
+        if (req.body.reviews) {
+            newGame["reviews"] = req.body.reviews; 
+        }
+        if (req.body.publisher) {
+            newGame["publisher"] = req.body.publisher;
+        }
+        Game.insertOne(newGame).exec((err, game) => getCallback(err, game, res, response, "Game added : ", 201));
+    } else {
+        response["status"] = 404;
+        response["message"] = {message : "Not all required fields provieded."}
+    } 
+    if (response["status"] != 201) {
+        res.status(response["status"]).json(response["message"]);
+    }
+}
+
+const getCallback = function (err, games, res, response, logString, statusCode) {
+    if (err) 
+    {
+        response["status"] = 500
+        response['message'] = {message : "Couldn't read data from db : " + err};
+    } 
+    else 
+    {
+        console.log( logString , (games.length || games));
+        response.status = statusCode;
+        response.message = games;
+        res.status(response.status).json(response.message);
+    }
+}
+
 
 module.exports.fullUpdateOne = function(req, res) {
     console.log("full update one game controller");
@@ -37,40 +116,6 @@ module.exports.fullUpdateOne = function(req, res) {
         Game.find(gameID).exec(function(err, game){
             if (game) {
                 console.log("Find game");
-                /**
-                 * const gameSchema = mongoose.Schema({
-    title: 
-    {
-        type: String,
-        required: true
-    }, 
-    year : Number,
-    rate: 
-    {
-        type: Number,
-        min: 1,
-        max: 5
-    },
-    price: Number,
-    minPlayers: 
-    {
-        type: Number,
-        min: 1, 
-        max: 10
-    },
-    maxPlayers: 
-    {
-        type: Number,
-        min: 1, 
-        max: 10
-    },
-    minAge: Number,
-    designers: [String],
-    reviews : [reviewSchema], 
-    publisher: publisherSchema
-});
-
-                 */
                 game.title = req.body.title; 
                 game.year = req.body.year; 
                 game.rage = req.body.rate;

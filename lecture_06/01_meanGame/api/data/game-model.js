@@ -51,4 +51,4 @@ const gameSchema = mongoose.Schema({
 
 
 //compile model 
-mongoose.model( process.env.GAME_MODEL, gameSchema, "games");
+mongoose.model( process.env.GAME_MODEL, gameSchema, process.env.GAME_MODEL);
