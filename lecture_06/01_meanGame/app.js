@@ -1,5 +1,6 @@
 require("dotenv").config();
 require("./api/data/db");
+const bodyParse = require("body-Parser");
 const express = require("express");
 const route = require("./api/route/route");
 
@@ -11,7 +12,9 @@ app.use(function(req, res, next) {
     next();
 })
 
-app.use("/api", route);
+const jsonParser  = bodyParse.json();
+
+app.use("/api", jsonParser,  route);
 
 const server = app.listen(process.env.PORT, function() {
     console.log(process.env.LISTEN_MESSAGE, server.address().port);
