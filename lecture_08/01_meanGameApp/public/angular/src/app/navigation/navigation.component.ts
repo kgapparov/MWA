@@ -14,7 +14,7 @@ export class NavigationComponent implements OnInit {
     this._router.navigate([""]);
   }
   onGames():void{
-    this._router.navigate([""]);
+    this._router.navigate(["games"]);
   }
   ngOnInit(): void {
   }
