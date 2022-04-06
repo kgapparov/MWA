@@ -1,0 +1,29 @@
+<p>new-component works!</p>
+
+<ul>
+    <li *ngFor="let person of people"> {{ person }}</li>
+</ul>
+
+{{title}}
+<button (click)="onButtonClick()">Change title</button>
+
+
+<br>
+
+<select>
+        <option *ngFor = "let s of students"> {{s.course}} </option>
+</select>
+
+<h2>PIPEs currency </h2>
+
+<!-- {{ price | currency: "$" } -->
+
+<!-- {{ today | date:"medium" }} -->
+
+{{students | json }}
+<br>
+{{ "Maharishi International University" | uppercase }}
+<br>
+{{ 123.1132412 | number:"5.0-5"}} <br>
+
+{{ 123 | number:"5.1-2"}}
