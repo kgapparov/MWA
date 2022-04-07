@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { FooterComponent } from './footer/footer.component';
@@ -14,8 +13,6 @@ import { StarRatingComponent } from './star-rating/star-rating.component';
 import { GameDeleteComponent } from './game-delete/game-delete.component';
 import { ParentComponent } from './parent/parent.component';
 import { ChildComponent } from './child/child.component';
-import { RegisterComponent } from './register/register.component';
-
 
 @NgModule({
   declarations: [
@@ -28,11 +25,9 @@ import { RegisterComponent } from './register/register.component';
     StarRatingComponent,
     GameDeleteComponent,
     ParentComponent,
-    ChildComponent,
-    RegisterComponent
+    ChildComponent
   ],
   imports: [
-    ReactiveFormsModule,
     HttpClientModule,
     BrowserModule,
     RouterModule.forRoot([
@@ -47,10 +42,6 @@ import { RegisterComponent } from './register/register.component';
       {
         path: "games/:gameId",
         component: GameComponent
-      },
-      {
-        path: "register",
-        component: RegisterComponent
       }
     ])
   ],

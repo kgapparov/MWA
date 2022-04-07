@@ -5,6 +5,10 @@ const Game = mongoose.model(process.env.GAME_MODEL);
 
 module.exports.getAll = function (req, res)
 {
+    if (req.query && req.query.lat && req.query.lng) {
+        _runGeoQuery(req, res);
+        return;
+    }
     const response = 
     {
         status: 200, 
@@ -21,6 +25,26 @@ module.exports.getAll = function (req, res)
         Game.find().skip(offset).limit(count).exec((err, games) => helpers.getCallback(err, games, res, response, "Games found :", 200));
 }
 
+_runGeoQuery = function (req, res) {
+    const lng = parseFloat(req.query.lng);
+    const lat = parseFloat(req.query.lat);
+    const  point = {type: "Point", coordinates : [lng, lat]};
+    const query = 
+        {"publisher.location.coordinates": 
+            {
+                $near: {
+                    $geometry:{ 
+                        type: "Point", 
+                        coordinates: [-79.35393775960023, 43.78026985716867], 
+                        $minDistance:0, 
+                        $maxDistance:1000
+                    }
+                }
+            }
+        }
+        Game.find(query).skip().limit().exec((err, games) => helpers.getCallback(err, games, res, response, "games found: ", 200));
+    };
+   
 module.exports.getOne = function (req, res){
     const expectedStatus = 200; 
     const response = { status: 200, message : {} };
