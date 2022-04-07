@@ -19,4 +19,7 @@ export class NavigationComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  onRegistration():void{
+    this._router.navigate(["register"]);
+  }
 }

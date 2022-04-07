@@ -24,8 +24,8 @@ export class GameDeleteComponent implements OnInit {
       this.service.deleteGame(this.#_id).subscribe(result => 
         {
           console.log(result);
-          this.router.navigate(["/"]);
+          this.router.navigate(["/games"]);
         });
-    }
+    } 
   }
 }
