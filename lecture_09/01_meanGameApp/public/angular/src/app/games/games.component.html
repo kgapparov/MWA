@@ -1,8 +1,0 @@
-<H2>MEAN Games</H2>
-<ul>
-    <li *ngFor="let game of games">
-        <input (change)="check($event)"  type="checkbox" value="{{game._id}}"><a routerLink="/games/{{game._id}}"> {{ game.title }} </a>
-    </li>
-    <button (click) = "delete()">Delete</button>
-    <br>
-</ul>
