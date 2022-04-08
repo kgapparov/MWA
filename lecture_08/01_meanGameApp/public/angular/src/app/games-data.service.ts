@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 
 import { Game } from './games/games.component'
 
@@ -24,5 +24,8 @@ export class GamesDataService {
   }
   public deleteGame(gameId:string): Observable<string> {
     return this.http.delete<string>(this.#baseUrl+"games/"+ gameId);
+  }
+  public addGame(game : Game){
+    return this.http.post(this.#baseUrl+ "games", game);
   }
 }

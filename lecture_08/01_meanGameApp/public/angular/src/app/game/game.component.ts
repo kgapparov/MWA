@@ -9,6 +9,7 @@ import { Game } from '../games/games.component'
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit {
+  returnPath: string = "games";
   game!: Game;
   constructor( private route: ActivatedRoute, private service: GamesDataService) { 
     this.game = new Game();

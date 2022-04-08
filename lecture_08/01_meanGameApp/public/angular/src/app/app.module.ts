@@ -15,6 +15,8 @@ import { GameDeleteComponent } from './game-delete/game-delete.component';
 import { ParentComponent } from './parent/parent.component';
 import { ChildComponent } from './child/child.component';
 import { RegisterComponent } from './register/register.component';
+import { PlaygroundComponent } from './playground/playground.component';
+import { AddGameComponent } from './add-game/add-game.component';
 
 
 @NgModule({
@@ -29,7 +31,9 @@ import { RegisterComponent } from './register/register.component';
     GameDeleteComponent,
     ParentComponent,
     ChildComponent,
-    RegisterComponent
+    RegisterComponent,
+    PlaygroundComponent,
+    AddGameComponent
   ],
   imports: [
     ReactiveFormsModule,
