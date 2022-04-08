@@ -10,7 +10,7 @@ import { GamesDataService } from '../games-data.service';
 export class GameDeleteComponent implements OnInit {
   #_id!:string;
   constructor(private service:GamesDataService, private router: Router) { }
-
+  #_path!: string; 
   ngOnInit(): void {
     
   }
@@ -18,13 +18,17 @@ export class GameDeleteComponent implements OnInit {
   set gameID(id:string) {
     this.#_id = id;
   } 
-
+  @Input()
+  set path(inputPath: string) {
+    this.#_path = inputPath;
+  }
+  
   onClick() {
     if (this.#_id) {
       this.service.deleteGame(this.#_id).subscribe(result => 
         {
           console.log(result);
-          this.router.navigate(["/games"]);
+          this.router.navigate([this.#_path] || [""]);
         });
     } 
   }
