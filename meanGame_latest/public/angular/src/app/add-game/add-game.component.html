@@ -1,0 +1,28 @@
+<form class= "form" [formGroup] = "gameForm" (ngSubmit) = "addGame()">
+    <div>
+        <label for="title">Title</label>
+        <input formControlName = "title" type="text" >
+    </div>
+    <div>
+        <label for="year">Year</label>
+        <input formControlName = "year" type="text" >
+    </div>
+    <div>
+        <label for="rate">Rate</label>
+        <input formControlName = "rate" type="text" >
+    </div>
+
+    <div>
+        <label for="minPlayers">Minimum Players</label>
+        <input formControlName = "minPlayers" type="text" >
+    </div>
+    <div>
+        <label for="maxPlayers">Maximum Players</label>
+        <input formControlName = "maxPlayers" type="text" >
+    </div>
+    <div>
+        <label for="minAge">Minimum age</label>
+        <input formControlName = "minAge" type="text" >
+    </div>
+    <div><input type="submit"></div>
+</form>
