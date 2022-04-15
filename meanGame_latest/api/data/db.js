@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 require("./game-model");
+require("./user-model");
 
-mongoose.connect(process.env.DB_URL);;
 
 mongoose.connection.on("connected", function(){
     console.log("Mongoose connected to " + process.env.DB_NAME);
@@ -35,3 +35,6 @@ process.on("SIGUSR2", function(){
         process.exit(0);
     })
 })
+
+
+mongoose.connect(process.env.DB_URL);;

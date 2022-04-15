@@ -1,0 +1,6 @@
+<form [formGroup] = "registrationForm" (ngSubmit) = "register()">
+    <div><input formControlName= "name" placeholder="Name"></div>
+    <div><input formControlName="username" placeholder="Username"></div>
+    <div><input formControlName="password"  type = "password" placeholder="password"></div>
+    <input type="submit" value="subit">
+</form>
