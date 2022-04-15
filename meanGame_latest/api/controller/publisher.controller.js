@@ -1,5 +1,6 @@
 const req = require("express/lib/request");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const utils = require("./utils");
 const callbackAndValidation = require("./callbacksAndValidations");
 const Game = mongoose.model(process.env.GAME_MODEL);
 
@@ -8,15 +9,23 @@ module.exports.getOne = function (req, res){
     const gameID = req.params.gameID;
     const response  = { status : 400 , message: {}};
     if (callbackAndValidation.checkID(gameID, response)) {
-        Game.findById(gameID).select("publisher").exec((err, game) => getOnePublisherCallback(err, game, res, response))
-    }
+        Game.findById(gameID).select("publisher")
+        .then(game => utils.onSuccessMessageHandler(response, process.env.SECCESS_STATUS, game.publisher))
+        .catch(err => utils.onErrorMessageHandler(response, process.env.INTERNAL_ERROR, err))
+        .finally(()=> utils.responseRequest(response, res));
+    } 
+    
 }
 
 module.exports.addOne = function (req, res){
     const gameID = req.params.gameID;
     const response  = { status : 400 , message: {}};
     if (callbackAndValidation.checkID(gameID, response)) {
-        Game.findById(gameID).select("publisher").exec((err, game) => addOnePublisherCallback(err, game, res, req, response))
+        Game.findById(gameID).select("publisher")
+        .then(game=> addOnePublisherCallback (game, req, response))
+        .then(utils.onSuccessMessageHandler(response, process.env.SUCCESSFULL_CREATED_STATUS, "Publisher addes successfully"))
+        .catch(err => utils.onErrorMessageHandler(response, process.env.INTERNAL_ERROR, err))
+        .finally(()=> utils.responseRequest(response, res))
     }
 }
 
@@ -24,7 +33,11 @@ module.exports.fullUpdateOne = function (req, res){
     const gameID = req.params.gameID;
     const response  = { status : 400 , message: {}};
     if (callbackAndValidation.checkID(gameID, response)) {
-        Game.findById(gameID).select("publisher").exec((err, game) => addOnePublisherCallback(err, game, res, req, response))
+        Game.findById(gameID).select("publisher")
+        .then(game=> addOnePublisherCallback (game, req, response))
+        .then(utils.onSuccessMessageHandler(response, process.env.SUCCESSFULL_CREATED_STATUS, "Publisher updated successfully"))
+        .catch(err => utils.onErrorMessageHandler(response, process.env.INTERNAL_ERROR, err))
+        .finally(()=> utils.responseRequest(response, res))
     }
 }
 
@@ -32,7 +45,11 @@ module.exports.partialUpdateOne = function (req, res){
     const gameID = req.params.gameID;
     const response  = { status : 400 , message: {}};
     if (callbackAndValidation.checkID(gameID, response)) {
-        Game.findById(gameID).select("publisher").exec((err, game) => partialUpdatePublisherCallback(err, game, res, req, response))
+        Game.findById(gameID).select("publisher")
+        .then(game=> partialUpdatePublisherCallback (game, req, response))
+        .then(utils.onSuccessMessageHandler(response, process.env.SUCCESSFULL_CREATED_STATUS, "Publisher updated successfully"))
+        .catch(err => utils.onErrorMessageHandler(response, process.env.INTERNAL_ERROR, err))
+        .finally(()=> utils.responseRequest(response, res))
     }
 }
 
@@ -40,26 +57,15 @@ module.exports.deleteOne = function (req, res){
     const gameID = req.params.gameID;
     const response  = { status : 400 , message: {}};
     if (callbackAndValidation.checkID(gameID, response)) {
-        Game.findById(gameID).select("publisher").exec((err, game) => deleteOneCallback(err, game, res, response))
+        Game.findById(gameID).select("publisher")
+        .then(()=> utils.onSuccessMessageHandler(response, process.env.SUCCESSFULL_CREATED_STATUS, "Succsesfully deleted"))
+        .catch((err) => utils.onErrorMessageHandler(response, process.env.INTERNAL_ERROR, err))
+        .finally(()=> utils.responseRequest(response, res));
     }
 }
 
-const deleteOneCallback = function(err, game, res, response) {
-    if (err) {
-        callbackAndValidation.responseSetter(404, "Game not found");
-    }
-    const publisher = {name: "No name"}; 
-    game.publisher = publisher;
-    game.save((err, publisher) => callbackAndValidation.getCallback(err, publisher, res, response, "publisher Deleted", 204));
-}
-
-
-const addOnePublisherCallback = function(err, game, res,  req, response) {
+const addOnePublisherCallback = function( game, req, response) {
     let  newPublisher; 
-    if (err) {
-        response["status"] = 404;
-        response["message"] = "game is absent"
-    }
     if (!req.body || ! req.body.name) {
         response["status"] = 400;
         response["message"] = "not all required fields provided"
@@ -72,17 +78,13 @@ const addOnePublisherCallback = function(err, game, res,  req, response) {
             newPublisher["established"] = req.body.established;
 
         game.publisher = newPublisher;
-        game.save((err, updatedGame) => callbackAndValidation.getCallback(err, updatedGame, res, response, "Publisher Added ", 201)); 
     }
+    game.save();
 }
 
 
-const partialUpdatePublisherCallback = function(err, game, res,  req, response) {
+const partialUpdatePublisherCallback = function(game, req, response) {
     let newPublisher = game.publisher; 
-    if (err) {
-        response["status"] = 404;
-        response["message"] = "game is absent"
-    }
     if (!req.body ) {
         response["status"] = 400;
         response["message"] = "not all required fields provided"
@@ -92,13 +94,6 @@ const partialUpdatePublisherCallback = function(err, game, res,  req, response) 
         newPublisher.country = req.body.country || newPublisher.country;
         newPublisher.established = req.body.established || newPublisher.established;
         newPublisher.location = req.body.location || newPublisher.location;
-
-        game.save((err, newPublisher) => callbackAndValidation.getCallback(err, newPublisher, res, response, "Publisher Added ", 204)); 
     }
-}
-
-
-const getOnePublisherCallback = function(err, game, res, response) {
-    const publisher = game.publisher; 
-    callbackAndValidation.getCallback(err, publisher, res, response, "Publisher Found ", 200);
+    game.save(); 
 }

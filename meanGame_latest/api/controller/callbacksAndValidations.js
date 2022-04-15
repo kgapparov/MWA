@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const getCallback = function (err, games, res, response, logString, statusCode) {
+const getCallback = function (err, games, response, logString, statusCode) {
     if (err) 
     {
         response["status"] = 500
@@ -14,11 +14,7 @@ const getCallback = function (err, games, res, response, logString, statusCode) 
             console.log( logString , (games.length || games));
             response.status = statusCode;
             response.message = games;
-            res.status(response.status).json(response.message);
         }
-    }
-    if (response["status"] != statusCode) {
-        res.status(response.status).json(response.message);
     }
 }
 
